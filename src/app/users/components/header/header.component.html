@@ -1,0 +1,30 @@
+<mat-toolbar color="primary">
+  <form [formGroup]="form">
+    <mat-form-field>
+      <mat-label>Search by ID</mat-label>
+      <input
+        type="text"
+        placeholder="User ID"
+        aria-label="Number"
+        matInput
+        [formControl]="form.controls.userId"
+        [matAutocomplete]="auto"
+      />
+      <mat-autocomplete #auto="matAutocomplete">
+        @if(!!form.value.userId){ @if(!loading$.value) { @if(user$.value){
+        <mat-option routerLink="{{ user$.value.id }}">
+          {{ user$.value.first_name }} {{ user$.value.last_name }}
+        </mat-option>
+        } @else{
+        <mat-option> User Not Found </mat-option>
+        } } @else{
+        <mat-option> Searching </mat-option>
+        } }
+      </mat-autocomplete>
+    </mat-form-field>
+  </form>
+</mat-toolbar>
+
+<div class="py-3">
+  <router-outlet />
+</div>
