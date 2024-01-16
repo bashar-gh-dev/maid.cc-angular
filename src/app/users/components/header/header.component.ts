@@ -13,7 +13,7 @@ import { RouterModule } from '@angular/router';
 import { SubSink } from 'subsink';
 import { BehaviorSubject, EMPTY, catchError, switchMap, tap } from 'rxjs';
 import { UsersService } from '../../services/users.service';
-import { UserState } from '../../store/user-profile/user.reducer';
+import { UserModel } from '../../models/user.model';
 
 @Component({
   selector: 'app-header',
@@ -33,8 +33,7 @@ import { UserState } from '../../store/user-profile/user.reducer';
 export class HeaderComponent implements OnInit, OnDestroy {
   subSink = new SubSink();
   loading$ = new BehaviorSubject(false);
-  error$ = new BehaviorSubject(undefined);
-  user$ = new BehaviorSubject<UserState['user']>(undefined);
+  user$ = new BehaviorSubject<UserModel | undefined>(undefined);
   form = this.fb.group({ userId: [null, [Validators.min(0)]] });
 
   constructor(private fb: FormBuilder, private usersService: UsersService) {}
@@ -44,14 +43,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
       .pipe(
         switchMap((value) => {
           const userId = parseInt(`${value.userId}`);
-          if (typeof userId === 'number' && !isNaN(userId)) {
+          if (isFinite(userId)) {
             this.loading$.next(true);
             this.user$.next(undefined);
             return this.usersService.findById(userId).pipe(
-              catchError((e) => {
+              catchError((_e) => {
                 this.user$.next(undefined);
                 this.loading$.next(false);
-
                 return EMPTY;
               })
             );

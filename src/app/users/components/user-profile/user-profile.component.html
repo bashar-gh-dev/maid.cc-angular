@@ -1,27 +1,35 @@
-@if(loading$.value){
-<mat-spinner class="w-40 mx-auto mb-3" />
-}@else if (error$.value) {
-<h4>{{ error$.value }}</h4>
-}@else if(user$.value) {
-<div class="max-w-96 mx-auto">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title-group>
-        <mat-card-title>
-          {{ user$.value.first_name }} {{ user$.value.last_name }}
-        </mat-card-title>
-        <mat-card-subtitle>ID: {{ user$.value.id }}</mat-card-subtitle>
-        <img mat-card-sm-image [src]="user$.value.avatar" />
-      </mat-card-title-group>
-    </mat-card-header>
-    <mat-card-content>
-      <a href="mailto:{{ user$.value.email }}">{{ user$.value.email }}</a>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-raised-button color="primary" routerLink="..">
-        Back to users list
-      </button>
-    </mat-card-actions>
-  </mat-card>
-</div>
-}
+<ng-container
+  *ngIf="{
+    user: user$ | async,
+    loading: loading$ | async,
+    error: error$ | async
+  } as state"
+>
+  @if(state.loading){
+  <mat-spinner class="w-40 mx-auto mb-3" />
+  }@else if (state.error) {
+  <h4>{{ state.error }}</h4>
+  }@else if(state.user) {
+  <div class="max-w-96 mx-auto">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title-group>
+          <mat-card-title>
+            {{ state.user.first_name }} {{ state.user.last_name }}
+          </mat-card-title>
+          <mat-card-subtitle>ID: {{ state.user.id }}</mat-card-subtitle>
+          <img mat-card-sm-image [src]="state.user.avatar" />
+        </mat-card-title-group>
+      </mat-card-header>
+      <mat-card-content>
+        <a href="mailto:{{ state.user.email }}">{{ state.user.email }}</a>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" routerLink="..">
+          Back to users list
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+  }
+</ng-container>

@@ -1,41 +1,52 @@
-@if(loading$.value){
-<mat-spinner class="w-40 mx-auto mb-3" />
-} @else if (error$.value) {
-<h4 class="text-red-600 mb-3">{{ error$.value }}</h4>
-}@else {
-<div class="mb-3 max-w-5xl mx-auto flex justify-center items-center flex-wrap">
-  @for( user of users$.value;track user.id) {
-  <div class="mx-3 w-[300px] flex-grow-1 mb-3">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title-group>
-          <mat-card-title>
-            {{ user.first_name }} {{ user.last_name }}
-          </mat-card-title>
-          <mat-card-subtitle>ID: {{ user.id }}</mat-card-subtitle>
-          <img mat-card-sm-image [src]="user.avatar" />
-        </mat-card-title-group>
-      </mat-card-header>
-      <mat-card-actions>
-        <button mat-raised-button color="primary" [routerLink]="[user.id]">
-          Show details
-        </button>
-      </mat-card-actions>
-    </mat-card>
+<ng-container
+  *ngIf="{
+    loading: loading$ | async,
+    error: error$ | async,
+    users: users$ | async,
+    pagination: pagination$ | async
+  } as state"
+>
+  @if(state.loading){
+  <mat-spinner class="w-40 mx-auto mb-3" />
+  } @else if (state.error) {
+  <h4 class="text-red-600 mb-3">{{ state.error }}</h4>
+  }@else {
+  <div
+    class="mb-3 max-w-5xl mx-auto flex justify-center items-center flex-wrap"
+  >
+    @for( user of state.users;track user.id) {
+    <div class="mx-3 w-[300px] flex-grow-1 mb-3">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title-group>
+            <mat-card-title>
+              {{ user.first_name }} {{ user.last_name }}
+            </mat-card-title>
+            <mat-card-subtitle>ID: {{ user.id }}</mat-card-subtitle>
+            <img mat-card-sm-image [src]="user.avatar" />
+          </mat-card-title-group>
+        </mat-card-header>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" [routerLink]="[user.id]">
+            Show details
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+    }
   </div>
   }
-</div>
-}
-
-<mat-paginator
-  #paginator
-  (page)="handlePageEvent($event)"
-  [length]="pagination$.value.totalUsers"
-  [pageSize]="pagination$.value.totalUsersPerPage"
-  [disabled]="loading$.value"
-  [showFirstLastButtons]="false"
-  hidePageSize
-  [pageIndex]="pagination$.value.page - 1"
-  aria-label="Select page"
->
-</mat-paginator>
+  <mat-paginator
+    #paginator
+    *ngIf="state.pagination"
+    (page)="handlePageEvent($event)"
+    [length]="state.pagination.totalUsers"
+    [pageSize]="state.pagination.totalUsersPerPage"
+    [disabled]="state.loading"
+    [showFirstLastButtons]="false"
+    hidePageSize
+    [pageIndex]="state.pagination.page - 1"
+    aria-label="Select page"
+  >
+  </mat-paginator>
+</ng-container>
